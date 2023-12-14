@@ -28,6 +28,8 @@ async fn main() -> shuttle_axum::ShuttleAxum {
         .route("/12/load/:string", get(day::d12::load_string))
         .route("/12/ulids", post(day::d12::ulids))
         .route("/12/ulids/:weekday", post(day::d12::ulids_weekday))
+        .route("/14/unsafe", post(day::d14::r#unsafe))
+        .route("/14/safe", post(day::d14::safe))
         .with_state(shared_state);
 
     Ok(router.into())
