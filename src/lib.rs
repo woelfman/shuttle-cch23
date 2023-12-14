@@ -1,10 +1,15 @@
-use std::collections::HashMap;
+use std::{
+    collections::HashMap,
+    sync::{Arc, Mutex},
+};
 
+use sqlx::PgPool;
 use tokio::time::Instant;
 
 pub mod day;
 
-#[derive(Default)]
+#[derive(Clone)]
 pub struct AppState {
-    pub save_string: HashMap<String, Instant>,
+    pub save_string: Arc<Mutex<HashMap<String, Instant>>>,
+    pub pool: PgPool,
 }

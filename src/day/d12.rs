@@ -6,30 +6,26 @@ use axum::{
 
 use chrono::Datelike;
 use serde::Serialize;
-use std::sync::{Arc, Mutex};
 use tokio::time::Instant;
 use ulid::Ulid;
 use uuid::Uuid;
 
 use crate::AppState;
 
-pub async fn save_string(State(state): State<Arc<Mutex<AppState>>>, Path(string): Path<String>) {
+pub async fn save_string(State(state): State<AppState>, Path(string): Path<String>) {
     state
+        .save_string
         .lock()
         .unwrap()
-        .save_string
         .insert(string, Instant::now());
 }
 
 pub async fn load_string(
-    State(state): State<Arc<Mutex<AppState>>>,
+    State(state): State<AppState>,
     Path(string): Path<String>,
 ) -> Result<String, StatusCode> {
-    let state = state.lock().unwrap();
-    let instant = state
-        .save_string
-        .get(&string)
-        .ok_or(StatusCode::NOT_ACCEPTABLE)?;
+    let lock = state.save_string.lock().unwrap();
+    let instant = lock.get(&string).ok_or(StatusCode::NOT_ACCEPTABLE)?;
 
     Ok(instant.elapsed().as_secs().to_string())
 }
