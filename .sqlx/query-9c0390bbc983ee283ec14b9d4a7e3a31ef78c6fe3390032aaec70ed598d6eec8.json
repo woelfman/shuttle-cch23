@@ -1,0 +1,20 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT 20231213 as \"i32\"",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "i32",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      null
+    ]
+  },
+  "hash": "9c0390bbc983ee283ec14b9d4a7e3a31ef78c6fe3390032aaec70ed598d6eec8"
+}
