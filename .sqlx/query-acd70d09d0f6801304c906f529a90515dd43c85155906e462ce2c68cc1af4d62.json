@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "CREATE TABLE regions (\n        id INT PRIMARY KEY,\n        name VARCHAR(50)\n    )",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "acd70d09d0f6801304c906f529a90515dd43c85155906e462ce2c68cc1af4d62"
+}

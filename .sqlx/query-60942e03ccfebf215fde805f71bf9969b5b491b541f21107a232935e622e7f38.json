@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DROP TABLE IF EXISTS regions",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "60942e03ccfebf215fde805f71bf9969b5b491b541f21107a232935e622e7f38"
+}

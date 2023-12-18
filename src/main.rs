@@ -50,6 +50,11 @@ async fn main(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_axum::Shut
         .route("/14/safe", post(day::d14::safe))
         .route("/15/nice", post(day::d15::nice))
         .route("/15/game", post(day::d15::game))
+        .route("/18/reset", post(day::d18::reset))
+        .route("/18/orders", post(day::d13::orders)) // Resuse d13 orders
+        .route("/18/regions", post(day::d18::regions))
+        .route("/18/regions/total", get(day::d18::regions_total))
+        .route("/18/regions/top_list/:number", get(day::d18::top_list))
         .with_state(state);
 
     Ok(router.into())
