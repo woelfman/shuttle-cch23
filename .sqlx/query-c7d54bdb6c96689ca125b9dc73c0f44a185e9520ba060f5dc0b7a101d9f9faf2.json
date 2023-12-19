@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT gift_name FROM orders\n            WHERE region_id = $1\n            GROUP BY gift_name\n            ORDER BY SUM(quantity)\n            DESC LIMIT $2",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "gift_name",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      true
+    ]
+  },
+  "hash": "c7d54bdb6c96689ca125b9dc73c0f44a185e9520ba060f5dc0b7a101d9f9faf2"
+}

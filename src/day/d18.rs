@@ -119,7 +119,8 @@ pub async fn top_list(
             GROUP BY gift_name
             ORDER BY SUM(quantity)
             DESC LIMIT $2",
-            region.id, number
+            region.id,
+            number
         )
         .fetch_all(&state.pool)
         .await
