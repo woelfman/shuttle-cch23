@@ -108,12 +108,7 @@ pub async fn game(Json(payload): Json<Payload>) -> Result<impl IntoResponse, imp
         .chars()
         .tuple_windows::<(_, _, _)>()
         .any(|(a, b, c)| {
-            if a.is_alphabetic() && b.is_alphabetic() && a == c && a != b {
-                tracing::info!("{a}{b}{c}");
-                true
-            } else {
-                false
-            }
+            a.is_alphabetic() && b.is_alphabetic() && a == c && a != b
         })
     {
         return Err((

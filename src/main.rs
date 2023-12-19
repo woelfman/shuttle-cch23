@@ -55,7 +55,8 @@ async fn main(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_axum::Shut
         .route("/18/regions", post(day::d18::regions))
         .route("/18/regions/total", get(day::d18::regions_total))
         .route("/18/regions/top_list/:number", get(day::d18::top_list))
-        .with_state(state);
+        .with_state(state)
+        .merge(day::d19::get_routes());
 
     Ok(router.into())
 }
