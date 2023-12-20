@@ -107,9 +107,7 @@ pub async fn game(Json(payload): Json<Payload>) -> Result<impl IntoResponse, imp
         .input
         .chars()
         .tuple_windows::<(_, _, _)>()
-        .any(|(a, b, c)| {
-            a.is_alphabetic() && b.is_alphabetic() && a == c && a != b
-        })
+        .any(|(a, b, c)| a.is_alphabetic() && b.is_alphabetic() && a == c && a != b)
     {
         return Err((
             StatusCode::UNAVAILABLE_FOR_LEGAL_REASONS,
