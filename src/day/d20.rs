@@ -1,12 +1,6 @@
 use std::io::Cursor;
 
-use axum::{
-    body::Bytes,
-    http::StatusCode,
-    response::IntoResponse,
-    routing::post,
-    Router,
-};
+use axum::{body::Bytes, http::StatusCode, response::IntoResponse, routing::post, Router};
 use tar::Archive;
 use tokio::process::Command;
 
@@ -66,7 +60,6 @@ async fn cookie(body: Bytes) -> Result<impl IntoResponse, impl IntoResponse> {
     for commit in output.split("commit ") {
         for line in commit.lines() {
             if line.starts_with('+') && line.contains("COOKIE") {
-
                 for line in commit.lines() {
                     if line.starts_with("Author: ") {
                         let author = line

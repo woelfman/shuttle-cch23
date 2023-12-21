@@ -9,6 +9,7 @@ axum = { version = "0.7", features = ["multipart", "ws"] }
 axum-extra = { version = "0.9.0", features = ["cookie"] }
 base64 = "0.21.5"
 chrono = "0.4.31"
+dms-coordinates = "1.1.0"
 futures-util = "0.3.29"
 handlebars = "4.5.0"
 image = "0.24.7"
@@ -16,6 +17,9 @@ itertools = "0.12.0"
 modql = { version = "0.3.4", features = ["with-sea-query"] }
 regex = "1.10.2"
 reqwest = { version = "0.11.22", features = ["json"] }
+reverse_geocoder = "4.0.0"
+rust_iso3166 = "0.1.11"
+s2 = "0.0.12"
 sea-query = "0.30.4"
 sea-query-binder = { version = "0.5.0", features = ["sqlx-postgres"] }
 serde = "1.0.193"
