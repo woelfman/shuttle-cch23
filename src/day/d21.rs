@@ -16,6 +16,7 @@ async fn binary(Path(binary): Path<String>) -> Result<impl IntoResponse, (Status
     let center: LatLng = cell_id.into();
     let lat = DMS::from_decimal_degrees(center.lat.deg(), true);
     let lon = DMS::from_decimal_degrees(center.lng.deg(), false);
+
     Ok(format!(
         "{}°{}'{:.3}''{} {}°{}'{:.3}''{}",
         lat.degrees,
