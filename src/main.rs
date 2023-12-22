@@ -59,7 +59,8 @@ async fn main(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_axum::Shut
         .merge(day::d5::get_routes())
         .merge(day::d19::get_routes())
         .merge(day::d20::get_routes())
-        .merge(day::d21::get_routes());
+        .merge(day::d21::get_routes())
+        .merge(day::d22::get_routes());
 
     Ok(router.into())
 }
