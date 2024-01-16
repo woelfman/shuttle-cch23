@@ -14,19 +14,19 @@ async fn binary(Path(binary): Path<String>) -> Result<impl IntoResponse, (Status
         u64::from_str_radix(&binary, 2).map_err(|e| (StatusCode::NOT_ACCEPTABLE, e.to_string()))?;
     let cell_id = CellID(binary);
     let center: LatLng = cell_id.into();
-    let lat = DMS::from_decimal_degrees(center.lat.deg(), true);
-    let lon = DMS::from_decimal_degrees(center.lng.deg(), false);
+    let lat = DMS::from_ddeg_latitude(center.lat.deg());
+    let lon = DMS::from_ddeg_longitude(center.lng.deg());
 
     Ok(format!(
         "{}°{}'{:.3}''{} {}°{}'{:.3}''{}",
         lat.degrees,
         lat.minutes,
         lat.seconds,
-        lat.bearing,
+        lat.cardinal.unwrap(),
         lon.degrees,
         lon.minutes,
         lon.seconds,
-        lon.bearing
+        lon.cardinal.unwrap()
     ))
 }
 
