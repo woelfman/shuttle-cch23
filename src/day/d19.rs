@@ -1,4 +1,7 @@
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::HashMap,
+    sync::{Arc, RwLock},
+};
 
 use axum::{
     extract::{
@@ -9,12 +12,10 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use futures_util::{
-    stream::{SplitSink, SplitStream},
-    SinkExt, StreamExt,
-};
+use futures_util::{SinkExt, StreamExt};
+use postage::{broadcast::Sender, prelude::*};
 use serde::{Deserialize, Serialize};
-use tokio::sync::Mutex;
+use serde_json::json;
 
 /// Routes supported by this day
 ///
@@ -22,49 +23,53 @@ use tokio::sync::Mutex;
 /// This way state variables the route depends on are localized and not exposed
 /// to other days that shouldn't care about these state variables.
 pub fn get_routes() -> Router {
-    Router::new()
+    let state = PongState::Init;
+
+    let ping_router = Router::new()
         .route("/19/ws/ping", get(ping))
+        .with_state(state);
+
+    let state = Arc::new(RwLock::new(BirdApp::default()));
+
+    let bird_app_router = Router::new()
         .route("/19/reset", post(reset))
         .route("/19/views", get(views))
         .route("/19/ws/room/:room/user/:user", get(room))
-        .with_state(BirdApp::default())
+        .with_state(state);
+
+    Router::new()
+        .nest("/", ping_router)
+        .nest("/", bird_app_router)
 }
 
-async fn ping(ws: WebSocketUpgrade) -> Response {
-    ws.on_upgrade(handle_ping)
+async fn ping(ws: WebSocketUpgrade, State(state): State<PongState>) -> Response {
+    ws.on_upgrade(|socket| handle_ping(socket, state))
 }
 
+#[derive(Clone)]
 enum PongState {
     Init,
     Started,
 }
 
-async fn handle_ping(mut socket: WebSocket) {
-    let mut state = PongState::Init;
-
-    while let Some(msg) = socket.recv().await {
+async fn handle_ping(mut socket: WebSocket, mut state: PongState) {
+    while let Some(Ok(msg)) = socket.recv().await {
         match state {
             PongState::Init => {
-                if let Ok(msg) = msg {
-                    if matches!(msg.to_text(), Ok("serve")) {
+                if let Message::Text(msg) = msg {
+                    if msg == "serve" {
                         state = PongState::Started;
                     }
-                } else {
-                    // client disconnected
-                    return;
-                };
+                }
             }
             PongState::Started => {
-                if let Ok(msg) = msg {
-                    if matches!(msg.to_text(), Ok("ping"))
-                        && socket.send("pong".into()).await.is_err()
-                    {
-                        // client disconnected
-                        return;
+                if let Message::Text(msg) = msg {
+                    if msg == "ping" {
+                        socket
+                            .send("pong".into())
+                            .await
+                            .expect("Failed to send pong");
                     }
-                } else {
-                    // client disconnected
-                    return;
                 }
             }
         }
@@ -73,75 +78,68 @@ async fn handle_ping(mut socket: WebSocket) {
 
 #[derive(Debug, Clone, Default)]
 struct BirdApp {
-    views: Arc<Mutex<u64>>,
-    rooms: Arc<Mutex<HashMap<u64, Room>>>,
+    views: u64,
+    rooms: HashMap<u64, Sender<String>>,
 }
 
-type Room = HashMap<String, UserSink>;
-type UserSink = Arc<Mutex<SplitSink<WebSocket, Message>>>;
-
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 struct Tweet {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    user: Option<String>,
     message: String,
 }
 
-async fn reset(State(state): State<BirdApp>) {
-    *state.views.lock().await = 0;
+async fn reset(State(state): State<Arc<RwLock<BirdApp>>>) {
+    state.write().unwrap().views = 0;
 }
 
-async fn views(State(state): State<BirdApp>) -> impl IntoResponse {
-    state.views.lock().await.to_string()
+async fn views(State(state): State<Arc<RwLock<BirdApp>>>) -> impl IntoResponse {
+    let views = state.read().unwrap().views.to_string();
+    tracing::info!("views: {views}");
+    views
 }
 
 async fn room(
     ws: WebSocketUpgrade,
-    State(state): State<BirdApp>,
+    State(state): State<Arc<RwLock<BirdApp>>>,
     Path((room, user)): Path<(u64, String)>,
 ) -> Response {
     ws.on_upgrade(move |socket| handle_room(socket, state, room, user))
 }
 
-async fn handle_room(ws: WebSocket, state: BirdApp, room: u64, user: String) {
-    let (sender, receiver) = ws.split();
+async fn handle_room(ws: WebSocket, state: Arc<RwLock<BirdApp>>, room: u64, user: String) {
+    let (mut sender, mut receiver) = ws.split();
 
-    state
+    let mut room_sender = state
+        .write()
+        .unwrap()
         .rooms
-        .lock()
-        .await
         .entry(room)
-        .or_default()
-        .insert(user.clone(), Arc::new(Mutex::new(sender)));
+        .or_insert(postage::broadcast::channel(32).0)
+        .clone();
 
-    tokio::spawn(read(receiver, state, room, user));
-}
+    let mut room_subscriber = room_sender.subscribe();
 
-async fn read(mut receiver: SplitStream<WebSocket>, state: BirdApp, room: u64, user: String) {
-    while let Some(msg) = receiver.next().await {
-        if let Ok(msg) = msg {
-            if let Ok(mut tweet) = serde_json::from_slice::<Tweet>(&msg.into_data()) {
-                if tweet.message.chars().count() > 128 {
-                    continue;
-                }
-
-                tweet.user = Some(user.clone());
-                if let Some(room) = state.rooms.lock().await.get(&room) {
-                    for user_sender in room.values() {
-                        let _ = user_sender
-                            .lock()
-                            .await
-                            .send(serde_json::to_string(&tweet).unwrap().into())
-                            .await;
-                    }
-
-                    *state.views.lock().await += room.len() as u64;
-                }
+    let mut task_sender = tokio::spawn(async move {
+        while let Some(msg) = room_subscriber.recv().await {
+            if sender.send(Message::Text(msg)).await.is_err() {
+                break;
             }
+            state.write().unwrap().views += 1;
         }
-    }
+    });
 
-    if let Some(room) = state.rooms.lock().await.get_mut(&room) {
-        room.remove(&user);
+    let mut task_receiver = tokio::spawn(async move {
+        while let Some(Ok(Message::Text(msg))) = receiver.next().await {
+            let tweet: Tweet = serde_json::from_str(&msg).expect("Invalid JSON message");
+            if tweet.message.chars().count() > 128 {
+                continue;
+            }
+            let msg = json!({"user": user, "message": tweet.message}).to_string();
+            let _ = room_sender.send(msg).await;
+        }
+    });
+
+    tokio::select! {
+        _ = (&mut task_sender) => task_sender.abort(),
+        _ = (&mut task_receiver) => task_receiver.abort(),
     }
 }

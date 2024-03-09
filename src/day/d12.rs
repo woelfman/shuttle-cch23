@@ -58,7 +58,7 @@ pub async fn ulids_weekday(
     let mut response = Weekday::default();
 
     for id in payload {
-        let ts = chrono::NaiveDateTime::from_timestamp_millis(id.timestamp_ms() as i64).unwrap();
+        let ts = chrono::DateTime::from_timestamp_millis(id.timestamp_ms() as i64).unwrap();
         if ts.month() == 12 && ts.day() == 24 {
             response.christmas_eve += 1;
         }
