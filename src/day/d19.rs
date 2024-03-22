@@ -93,7 +93,6 @@ async fn reset(State(state): State<Arc<RwLock<BirdApp>>>) {
 
 async fn views(State(state): State<Arc<RwLock<BirdApp>>>) -> impl IntoResponse {
     let views = state.read().unwrap().views.to_string();
-    tracing::info!("views: {views}");
     views
 }
 
