@@ -11,9 +11,9 @@ pub struct Elf {
 }
 
 pub async fn elf(payload: String) -> Json<Elf> {
+    const EOAS: &str = "elf on a shelf";
     let mut elves = Elf::default();
     let mut idx = 0;
-    const EOAS: &str = "elf on a shelf";
 
     while let Some(i) = payload[idx..].find("elf") {
         elves.elf += 1;

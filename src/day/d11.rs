@@ -14,7 +14,7 @@ pub async fn red_pixels(mut multipart: Multipart) -> Result<String, StatusCode> 
                 .decode()
                 .unwrap();
             let magical_red = decoder.pixels().fold(0u64, |acc, (_x, _y, p)| {
-                if p[0] as u16 > p[1] as u16 + p[2] as u16 {
+                if u16::from(p[0]) > u16::from(p[1]) + u16::from(p[2]) {
                     acc + 1
                 } else {
                     acc

@@ -11,18 +11,20 @@ pub fn get_routes() -> Router {
 async fn integers(body: String) -> String {
     let mut ints: Vec<u64> = body.lines().filter_map(|n| n.parse().ok()).collect();
 
-    ints.sort();
+    ints.sort_unstable();
 
     for mut chunk in &ints.into_iter().chunks(2) {
         let a = chunk.next();
         let b = chunk.next();
 
         if a != b {
-            return '🎁'.to_string().repeat(a.unwrap() as usize);
+            return '🎁'
+                .to_string()
+                .repeat(usize::try_from(a.unwrap()).unwrap_or(usize::MAX));
         }
     }
 
-    "".to_string()
+    String::new()
 }
 
 struct Coordinate {

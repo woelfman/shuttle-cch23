@@ -15,7 +15,7 @@ pub async fn pokedex(Path(pokedex): Path<u32>) -> Result<String, StatusCode> {
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    Ok((pokemon.weight as f64 / 10.).to_string())
+    Ok((f64::from(pokemon.weight) / 10.).to_string())
 }
 
 pub async fn drop(Path(pokedex): Path<u32>) -> Result<String, StatusCode> {
@@ -28,6 +28,6 @@ pub async fn drop(Path(pokedex): Path<u32>) -> Result<String, StatusCode> {
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     let speed = (2.0f64 * 9.825 * 10.).sqrt();
-    let momentum = speed * (pokemon.weight as f64 / 10.);
+    let momentum = speed * (f64::from(pokemon.weight) / 10.);
     Ok(momentum.to_string())
 }

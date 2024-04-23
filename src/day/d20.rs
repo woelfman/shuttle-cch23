@@ -16,7 +16,7 @@ async fn archive_files(body: Bytes) -> impl IntoResponse {
 
     let files = archive
         .entries()
-        .map(|entries| entries.count())
+        .map(std::iter::Iterator::count)
         .unwrap_or(0);
 
     files.to_string()

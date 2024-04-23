@@ -1,7 +1,7 @@
 use axum::{extract::Path, http::StatusCode};
 
 pub async fn num(Path(num): Path<String>) -> Result<String, StatusCode> {
-    let num: Result<Vec<i64>, _> = num.split('/').map(|x| x.parse::<i64>()).collect();
+    let num: Result<Vec<i64>, _> = num.split('/').map(str::parse).collect();
     let num = num.map_err(|_| StatusCode::BAD_REQUEST)?;
 
     let result: i64 = num.iter().fold(0, |acc, &x| acc ^ x).pow(3);

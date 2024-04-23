@@ -36,7 +36,7 @@ pub async fn bake(jar: CookieJar) -> Result<String, StatusCode> {
         let mut cookies = u64::MAX;
 
         // Get the number of cookies we can bake
-        for (key, value) in recipe.as_object().unwrap().iter() {
+        for (key, value) in recipe.as_object().unwrap() {
             if let Some(ingredient) = pantry.get(key) {
                 if value.as_u64().unwrap_or_default() > 0 {
                     cookies = (ingredient.as_u64().unwrap_or_default()
@@ -47,7 +47,7 @@ pub async fn bake(jar: CookieJar) -> Result<String, StatusCode> {
         }
 
         // Subtract the ingredients used to make the cookies
-        for (key, value) in recipe.as_object().unwrap().iter() {
+        for (key, value) in recipe.as_object().unwrap() {
             if let Some(ingredient) = pantry.get_mut(key) {
                 *ingredient = Value::Number(serde_json::Number::from(
                     ingredient.as_u64().unwrap() - cookies * value.as_u64().unwrap(),

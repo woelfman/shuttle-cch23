@@ -22,7 +22,7 @@ pub async fn nice(Json(payload): Json<Payload>) -> Result<impl IntoResponse, imp
     if payload
         .input
         .chars()
-        .fold(0, |acc, c| acc + if nice.contains(&c) { 1 } else { 0 })
+        .fold(0, |acc, c| acc + i32::from(nice.contains(&c)))
         < 3
     {
         return Err((StatusCode::BAD_REQUEST, Json(json!({"result": "naughty"}))));
@@ -51,8 +51,8 @@ pub async fn game(Json(payload): Json<Payload>) -> Result<impl IntoResponse, imp
     }
 
     // Rule 2: must contain uppercase letters, lowercase letters, and digits
-    if !payload.input.chars().any(|c| c.is_uppercase())
-        || !payload.input.chars().any(|c| c.is_lowercase())
+    if !payload.input.chars().any(char::is_uppercase)
+        || !payload.input.chars().any(char::is_lowercase)
         || !payload.input.chars().any(|c| c.is_ascii_digit())
     {
         return Err((
@@ -65,7 +65,7 @@ pub async fn game(Json(payload): Json<Payload>) -> Result<impl IntoResponse, imp
     if payload
         .input
         .chars()
-        .fold(0, |acc, c| acc + if c.is_ascii_digit() { 1 } else { 0 })
+        .fold(0, |acc, c| acc + i32::from(c.is_ascii_digit()))
         < 5
     {
         return Err((
