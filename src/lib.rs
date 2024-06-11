@@ -1,15 +1,6 @@
-use std::{
-    collections::HashMap,
-    sync::{Arc, Mutex},
-};
-
-use sqlx::PgPool;
-use tokio::time::Instant;
+//! [Shuttle's Christmas Code Hunt 2023](https://console.shuttle.rs/cch)
+//!
+//! The Shuttle Christmas Code Hunt is a set of Rust challenges that were
+//! released throughout December 2023.
 
 pub mod day;
-
-#[derive(Clone)]
-pub struct AppState {
-    pub save_string: Arc<Mutex<HashMap<String, Instant>>>,
-    pub pool: PgPool,
-}
