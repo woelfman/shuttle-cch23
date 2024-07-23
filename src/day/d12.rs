@@ -124,7 +124,7 @@ use axum::{
     Json, Router,
 };
 
-use chrono::Datelike;
+use jiff::Timestamp;
 use serde::Serialize;
 use tokio::time::Instant;
 use ulid::Ulid;
@@ -197,21 +197,24 @@ async fn ulids_weekday(Path(weekday): Path<u8>, Json(payload): Json<Vec<Ulid>>) 
     let mut response = Weekday::default();
 
     for id in payload {
-        let ts = chrono::DateTime::from_timestamp_millis(id.timestamp_ms() as i64).unwrap();
-        if ts.month() == 12 && ts.day() == 24 {
-            response.christmas_eve += 1;
-        }
+        if let Ok(ts) =
+            Timestamp::from_millisecond(id.timestamp_ms() as i64).and_then(|ts| ts.intz("UTC"))
+        {
+            if ts.month() == 12 && ts.day() == 24 {
+                response.christmas_eve += 1;
+            }
 
-        if ts.weekday() as u8 == weekday {
-            response.weekday += 1;
-        }
+            if ts.weekday().to_monday_zero_offset() == weekday as i8 {
+                response.weekday += 1;
+            }
 
-        if ts.timestamp() > chrono::Utc::now().timestamp() {
-            response.in_the_future += 1;
-        }
+            if ts.timestamp() > Timestamp::now() {
+                response.in_the_future += 1;
+            }
 
-        if id.random() & 1 == 1 {
-            response.lsb += 1;
+            if id.random() & 1 == 1 {
+                response.lsb += 1;
+            }
         }
     }
 
