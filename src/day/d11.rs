@@ -70,7 +70,7 @@ async fn red_pixels(mut multipart: Multipart) -> Result<String, StatusCode> {
         let name = field.name().unwrap().to_string();
         if name == "image" {
             let data = field.bytes().await.unwrap();
-            let decoder = image::io::Reader::new(Cursor::new(data))
+            let decoder = image::ImageReader::new(Cursor::new(data))
                 .with_guessed_format()
                 .unwrap()
                 .decode()
