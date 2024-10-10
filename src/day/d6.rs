@@ -33,10 +33,10 @@
 //! Add two fields to the response that counts:
 //!
 //! * The number of occurrences of the string `"elf on a shelf"` in a field with
-//! the same name.
+//!   the same name.
 //! * number of shelves that don't have an elf on it. That is,
-//! the number of strings `"shelf"` that are not preceded by the string `"elf on a "`.
-//! Put this count in the field `"shelf with no elf on it"`.
+//!   the number of strings `"shelf"` that are not preceded by the string `"elf on a "`.
+//!   Put this count in the field `"shelf with no elf on it"`.
 //!
 //! ## Example
 //!

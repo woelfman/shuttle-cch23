@@ -15,7 +15,7 @@
 //!
 //! * If the incoming string is `serve`, the game starts in this WebSocket.
 //! * If and only if the game has started, respond with a string `pong` whenever
-//! the incoming string is `ping`.
+//!   the incoming string is `ping`.
 //! * All other incoming messages should be ignored.
 //!
 //! # Task 2: Bird App Simulator
@@ -33,26 +33,26 @@
 //! * POST endpoint `/19/reset` that resets the counter of tweet views.
 //! * GET endpoint `/19/views` that returns the current count of tweet views.
 //! * GET endpoint `/19/ws/room/<number>/user/<string>` that opens a WebSocket
-//! and connects a user to a room.
+//!   and connects a user to a room.
 //!
 //! This is how the app should work:
 //!
 //! * A user can at any time send a tweet as a Text WebSocket message in the
-//! format `{"message":"Hello North Pole!"}`.
+//!   format `{"message":"Hello North Pole!"}`.
 //! * When a tweet is received, broadcast it to everyone in the same room
-//! (including the sender).
+//!   (including the sender).
 //! * Tweets with more than 128 characters are too long and should be ignored by
-//! the server.
+//!   the server.
 //! * Tweets sent out to room members should have the format
-//! `{"user":"xX_f4th3r_0f_chr1stm4s_Xx","message":"Hello North Pole!"}` where
-//! user is the author of the tweet (the username that the sender used in the
-//! endpoint's URL path).
+//!   `{"user":"xX_f4th3r_0f_chr1stm4s_Xx","message":"Hello North Pole!"}` where
+//!   user is the author of the tweet (the username that the sender used in the
+//!   endpoint's URL path).
 //! * Every time a tweet is successfully sent out to a user, it counts as one
-//! view.
+//!   view.
 //! * Keep a running count of the number of views that happen, and return the
-//! current view count from the `/19/views` endpoint whenever requested.
+//!   current view count from the `/19/views` endpoint whenever requested.
 //! * When a websocket closes, that user leaves the room and should no longer
-//! receive tweets.
+//!   receive tweets.
 //! * When the reset endpoint is called, the counter is set to 0.
 //!
 //! The view counter can be in-memory and does not need to persist.

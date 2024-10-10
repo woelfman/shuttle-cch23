@@ -20,7 +20,7 @@
 //!
 //! * POST `/12/save/<string>`: takes a string and stores it.
 //! * GET `/12/load/<string>`: takes the same string and returns the number of
-//! whole seconds elapsed since the last time it was stored.
+//!   whole seconds elapsed since the last time it was stored.
 //!
 //! ## Example
 //!

@@ -21,8 +21,8 @@
 //! The rules at this endpoint are:
 //!
 //! * Nice Strings: Must contain at least three vowels (`aeiouy`), at least one
-//! letter that appears twice in a row, and must not contain the substrings: `ab`,
-//! `cd`, `pq`, or `xy`.
+//!   letter that appears twice in a row, and must not contain the substrings: `ab`,
+//!   `cd`, `pq`, or `xy`.
 //! * Naughty Strings: Do not meet the criteria for nice strings.
 //!
 //! Return an appropriate HTTP status code and message (see below) indicating

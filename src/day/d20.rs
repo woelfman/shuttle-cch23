@@ -68,7 +68,7 @@
 //! `santa.txt` (in any directory) with the string `COOKIE` anywhere inside of it.*
 //!
 //! * There are no merge commits in the repo (all commits have one parent,
-//! except the root commit).
+//!   except the root commit).
 //!
 //! ## Example
 //!
