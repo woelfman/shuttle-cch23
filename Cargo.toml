@@ -22,7 +22,7 @@ reqwest = { version = "0.12", features = ["json"] }
 reverse_geocoder = "4.0.0"
 rust_iso3166 = "0.1.11"
 s2 = "0.0.13"
-sea-query = "0.32.0-rc.2"
+sea-query = "0.32.0"
 sea-query-binder = { version = "0.7.0-rc.2", features = ["sqlx-postgres"] }
 serde = "1.0.193"
 serde_json = "1.0.108"
