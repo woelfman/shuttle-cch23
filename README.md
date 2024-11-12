@@ -1,5 +1,11 @@
 # Shuttle's Christmas Code Hunt
 
+## Install shuttle
+
+```sh
+cargo install shuttle
+```
+
 ## Setup shuttle for podman (skip if using docker).
 
 ```sh
@@ -10,5 +16,5 @@ export DOCKER_HOST=unix:///tmp/podman.sock
 ## Run shuttle locally
 
 ```sh
-cargo shuttle run
+shuttle run
 ```
